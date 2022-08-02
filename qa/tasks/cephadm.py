@@ -1533,7 +1533,7 @@ def task(ctx, config):
 
     if not hasattr(ctx.ceph[cluster_name], 'image'):
         ctx.ceph[cluster_name].image = config.get('image')
-    ref = None
+    ref = ctx.config.get("branch", "main")
     if not ctx.ceph[cluster_name].image:
         if not container_image_name:
             raise Exception("Configuration error occurred. "
