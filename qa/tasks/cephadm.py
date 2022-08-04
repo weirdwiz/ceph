@@ -766,10 +766,13 @@ def ceph_osds(ctx, config):
                 _, _, id_ = teuthology.split_role(osd)
                 id_to_remote[int(id_)] = (osd, remote)
 
+        log.debug(f"{devs_by_remote=}")
+        log.debug(f"{id_to_remote=}")
         cur = 0
         for osd_id in sorted(id_to_remote.keys()):
             osd, remote = id_to_remote[osd_id]
             _, _, id_ = teuthology.split_role(osd)
+            log.debug(f"{osd_id=} {osd=} {remote=}")
             assert int(id_) == cur
             devs = devs_by_remote[remote]
             assert devs   ## FIXME ##
