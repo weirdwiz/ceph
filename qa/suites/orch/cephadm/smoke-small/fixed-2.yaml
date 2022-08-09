@@ -13,7 +13,6 @@ roles:
   - prometheus.a
   - grafana.a
   - node-exporter.b
-  - ceph.iscsi.iscsi.a
 - - mon.c
   - mgr.z
   - osd.2
