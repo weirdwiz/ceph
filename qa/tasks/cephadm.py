@@ -182,7 +182,6 @@ def download_cephadm(ctx, config, ref):
     try:
         yield
     finally:
-        return
         log.info('Removing cluster...')
         ctx.cluster.run(args=[
             'sudo',
@@ -544,7 +543,6 @@ def ceph_bootstrap(ctx, config):
         yield
 
     finally:
-        return
         log.info('Cleaning up testdir ceph.* files...')
         ctx.cluster.run(args=[
             'rm', '-f',
@@ -1346,7 +1344,6 @@ def distribute_config_and_admin_keyring(ctx, config):
     try:
         yield
     finally:
-        return
         ctx.cluster.run(args=[
             'sudo', 'rm', '-f',
             '/etc/ceph/{}.conf'.format(cluster_name),
