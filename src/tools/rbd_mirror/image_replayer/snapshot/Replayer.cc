@@ -1607,12 +1607,9 @@ template <typename I> void Replayer<I>::register_perf_counters() {
 
   auto cct = static_cast<CephContext *>(m_state_builder->local_image_ctx->cct);
   auto prio = cct->_conf.get_val<int64_t>("rbd_mirror_image_perf_stats_prio");
-  // build a cache
-  // make it a global variable
-  // increment it as same as other perf counters
 
-  // placeholder
-  uint64_t target_size = 10;
+  uint64_t target_size = cct->_conf.get_val<uint64_t>("labeled_perfcounters_cache_size");
+  bool eviction = cct->_conf.get_val<bool>("labeled_perfcounters_cache_eviction");
 
   std::function<void(ceph::common::PerfCountersBuilder *)> lpcb_init =
       add_labeled_counters;
@@ -1620,7 +1617,7 @@ template <typename I> void Replayer<I>::register_perf_counters() {
   derr << type_name<decltype(lpcb_init)>() << dendl;
 
   perf_counters_cache =
-      new PerfCountersCache(g_ceph_context, target_size, l_rbd_mirror_snapshot_first,
+      new PerfCountersCache(g_ceph_context, eviction, target_size, l_rbd_mirror_snapshot_first,
                             l_rbd_mirror_snapshot_last, lpcb_init , "rbd");
 
   PerfCountersBuilder plb(g_ceph_context,
