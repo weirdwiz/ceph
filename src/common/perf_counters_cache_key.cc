@@ -7,7 +7,7 @@
 namespace ceph::perf_counters::detail {
 
 // use a null character to delimit strings
-constexpr char delimiter = ':';
+constexpr char delimiter = '\0';
 
 
 // write a delimited string to the output
