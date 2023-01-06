@@ -408,7 +408,7 @@ void PerfCounters::dump_formatted_generic(Formatter *f, bool schema,
       f->dump_int("type", d->type);
 
       if (d->type & PERFCOUNTER_COUNTER) {
-        f->dump_string("metric_type", "counter");
+       f->dump_string("metric_type", "counter");
       } else {
         f->dump_string("metric_type", "gauge");
       }
@@ -507,8 +507,9 @@ PerfCounters::PerfCounters(CephContext *cct, const std::string &name,
     m_lower_bound(lower_bound),
     m_upper_bound(upper_bound),
     m_name(name),
-    m_is_labeled(is_labeled),
+    m_is_labeled(is_labeled)
 #if !defined(WITH_SEASTAR) || defined(WITH_ALIEN)
+    ,
     m_lock_name(std::string("PerfCounters::") + name.c_str()),
     m_lock(ceph::make_mutex(m_lock_name))
 #endif
