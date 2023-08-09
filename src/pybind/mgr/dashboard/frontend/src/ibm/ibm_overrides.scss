@@ -698,6 +698,10 @@ cd-navigation {
           background-color: $background !important;
         }
 
+        ul li .fa-circle {
+          margin-top: 0 !important;
+        }
+
         a:hover,
         li:hover {
           background-color: $background-hover !important;
