@@ -292,12 +292,8 @@ std::string DaemonMetricCollector::asok_request(AdminSocketClient &asok,
   return response;
 }
 
-std::pair<labels_t, std::string>
-DaemonMetricCollector::get_labels_and_metric_name(std::string daemon_name,
-                                                  std::string metric_name) {
-  std::string new_metric_name;
+labels_t DaemonMetricCollector::get_extra_labels(std::string daemon_name) {
   labels_t labels;
-  new_metric_name = metric_name;
   const std::string ceph_daemon_prefix = "ceph-";
   const std::string ceph_client_prefix = "client.";
   if (daemon_name.rfind(ceph_daemon_prefix, 0) == 0) {
@@ -324,24 +320,12 @@ DaemonMetricCollector::get_labels_and_metric_name(std::string daemon_name,
     if (elems.size() >= 4) {
       labels["instance_id"] = quote(elems[3]);
     } else {
-      return std::make_pair(labels_t(), "");
+      return labels_t();
     }
   } else {
     labels.insert({"ceph_daemon", quote(daemon_name)});
   }
-  if (daemon_name.find("rbd-mirror") != std::string::npos) {
-    std::regex re(
-        "^rbd_mirror_image_([^/]+)/(?:(?:([^/]+)/"
-        ")?)(.*)\\.(replay(?:_bytes|_latency)?)$");
-    std::smatch match;
-    if (std::regex_search(daemon_name, match, re) == true) {
-      new_metric_name = "ceph_rbd_mirror_image_" + match.str(4);
-      labels["pool"] = quote(match.str(1));
-      labels["namespace"] = quote(match.str(2));
-      labels["image"] = quote(match.str(3));
-    }
-  }
-  return {labels, new_metric_name};
+  return labels;
 }
 
 // Add fixed name metrics from existing ones that have details in their names
