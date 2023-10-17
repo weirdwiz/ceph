@@ -330,3 +330,22 @@ Relevant tracker: https://tracker.ceph.com/issues/55715
 request from client(s). This can be useful during some recovery situations
 where it's desirable to bring MDS up but have no client workload.
 Relevant tracker: https://tracker.ceph.com/issues/57090
+
+* New MDSMap field `max_xattr_size` which can be set using the `fs set` command.
+  This MDSMap field allows to configure the maximum size allowed for the full
+  key/value set for a filesystem extended attributes.  It effectively replaces
+  the old per-MDS `max_xattr_pairs_size` setting, which is now dropped.
+  Relevant tracker: https://tracker.ceph.com/issues/55725
+
+* Introduced a new file system flag `refuse_standby_for_another_fs` that can be
+set using the `fs set` command. This flag prevents using a standby for another
+file system (join_fs = X) when standby for the current filesystem is not available.
+Relevant tracker: https://tracker.ceph.com/issues/61599
+* mon: add NVMe-oF gateway monitor and HA
+  This PR adds high availability support for the nvmeof Ceph service. High availability
+means that even in the case that a certain GW is down, there will be another available
+path for the initiator to be able to continue the IO through another GW.
+It is also adding 2 new mon commands, to notify monitor about the gateway creation/deletion:
+  - nvme-gw create
+  - nvme-gw delete
+Relevant tracker: https://tracker.ceph.com/issues/64777
