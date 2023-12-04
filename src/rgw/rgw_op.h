@@ -1837,6 +1837,9 @@ protected:
   RGWAccessControlPolicy policy;
   ceph::real_time mtime;
   jspan multipart_trace;
+  //object lock
+  std::optional<RGWObjectRetention> obj_retention = std::nullopt;
+  std::optional<RGWObjectLegalHold> obj_legal_hold = std::nullopt;
 
 public:
   RGWInitMultipart() {}
@@ -1866,6 +1869,9 @@ protected:
   bufferlist data;
   rgw::sal::MPSerializer* serializer;
   jspan multipart_trace;
+  //object lock
+  bool bypass_perm = true;
+  bool bypass_governance_mode = false;
 
 public:
   RGWCompleteMultipart() : serializer(nullptr) {}

@@ -1178,6 +1178,11 @@ protected:
   jspan_context trace_ctx{false, false};
 public:
   MultipartUpload(Bucket* _bucket) : bucket(_bucket) {}
+
+  //object lock
+  std::optional<RGWObjectRetention> obj_retention = std::nullopt;
+  std::optional<RGWObjectLegalHold> obj_legal_hold = std::nullopt;
+
   virtual ~MultipartUpload() = default;
 
   /** Get the name of the object representing this upload in the backing store */

@@ -535,6 +535,7 @@ class RadosMultipartUpload : public MultipartUpload {
   ceph::real_time mtime;
   rgw_placement_rule placement;
   RGWObjManifest manifest;
+  multipart_upload_info upload_information;
 
 public:
   RadosMultipartUpload(RadosStore* _store, Bucket* _bucket, const std::string& oid,
