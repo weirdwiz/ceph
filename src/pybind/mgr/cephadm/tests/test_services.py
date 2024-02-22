@@ -768,6 +768,10 @@ class TestMonitoring:
                         - '{job="ceph-exporter"}'
                     static_configs:
                     - targets: []
+
+                  - job_name: 'nvmeof'
+                    http_sd_configs:
+                    - url: http://[::1]:8765/sd/prometheus/sd-config?service=nvmeof
                 """).lstrip()
 
                 _run_cephadm.assert_called_with(
@@ -940,7 +944,18 @@ class TestMonitoring:
                         password: sd_password
                       tls_config:
                         ca_file: root_cert.pem
-
+                  - job_name: 'nvmeof'
+                    honor_labels: true
+                    scheme: https
+                    tls_config:
+                      ca_file: root_cert.pem
+                    http_sd_configs:
+                    - url: https://[::1]:8765/sd/prometheus/sd-config?service=nvmeof
+                      basic_auth:
+                        username: sd_user
+                        password: sd_password
+                      tls_config:
+                        ca_file: root_cert.pem
                 """).lstrip()
 
                 _run_cephadm.assert_called_with(
