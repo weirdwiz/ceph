@@ -7,6 +7,7 @@ import threading
 import time
 import uuid
 from base64 import b64encode
+from typing import Optional
 
 import cherrypy
 import jwt
@@ -46,11 +47,13 @@ class JwtManager(object):
         cls._secret = secret
 
     @classmethod
-    def gen_token(cls, username):
+    def gen_token(cls, username, ttl: Optional[int] = None):
         if not cls._secret:
             cls.init()
-        ttl = mgr.get_module_option('jwt_token_ttl', cls.JWT_TOKEN_TTL)
-        ttl = int(ttl)
+        if ttl is None:
+            ttl = mgr.get_module_option('jwt_token_ttl', cls.JWT_TOKEN_TTL)
+        else:
+            ttl = int(ttl) * 60 * 60  # convert hours to seconds
         now = int(time.time())
         payload = {
             'iss': 'ceph-dashboard',
