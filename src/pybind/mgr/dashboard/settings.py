@@ -119,6 +119,7 @@ class Options(object):
                                                   'gateway', 'logs', 'crush', 'maps']),
                                         [str])
 
+    MANAGED_BY_CLUSTERS = Setting([], [dict, list])
     UNSAFE_TLS_v1_2 = Setting(False, [bool])
     CALL_HOME_REMIND_LATER_ON = Setting('', [str])
     STORAGE_INSIGHTS_REMIND_LATER_ON = Setting('', [str])
