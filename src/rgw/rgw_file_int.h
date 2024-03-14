@@ -2582,6 +2582,8 @@ public:
   RGWFileHandle* dst_parent;
   const std::string& src_name;
   const std::string& dst_name;
+  std::string src_obj_name;
+  std::string dst_obj_name;
 
   RGWCopyObjRequest(CephContext* _cct, std::unique_ptr<rgw::sal::User> _user,
 		    RGWFileHandle* _src_parent, RGWFileHandle* _dst_parent,
@@ -2615,13 +2617,14 @@ public:
     state->src_bucket_name = src_parent->bucket_name();
     state->bucket_name = dst_parent->bucket_name();
 
-    std::string dest_obj_name = dst_parent->format_child_name(dst_name, false);
+    src_obj_name = src_parent->format_child_name(src_name, false /* is_dir */);
+    dst_obj_name = dst_parent->format_child_name(dst_name, false);
 
-    int rc = valid_s3_object_name(dest_obj_name);
+    int rc = valid_s3_object_name(dst_obj_name);
     if (rc != 0)
       return rc;
 
-    state->object = RGWHandler::driver->get_object(rgw_obj_key(dest_obj_name));
+    state->object = RGWHandler::driver->get_object(rgw_obj_key(dst_obj_name));
 
     /* XXX and fixup key attr (could optimize w/string ref and
      * dest_obj_name) */
@@ -2648,10 +2651,9 @@ public:
     int ret = s3policy.create_canned(s->owner, s->bucket_owner, s->canned_acl);
     dest_policy = s3policy;
     /* src_object required before RGWCopyObj::verify_permissions() */
-    rgw_obj_key k = rgw_obj_key(src_name);
+    rgw_obj_key k = rgw_obj_key(src_obj_name);
     s->src_object = s->bucket->get_object(k);
-    s->object = s->src_object->clone(); // needed to avoid trap at rgw_op.cc:5150
-    return ret;
+    return 0;
   }
 
   void send_response() override {}
