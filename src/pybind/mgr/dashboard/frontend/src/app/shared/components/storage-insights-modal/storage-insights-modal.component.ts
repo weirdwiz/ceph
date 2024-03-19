@@ -9,7 +9,6 @@ import { CallHomeService } from '../../api/call-home.service';
 import { StorageInsightsNotificationService } from '../../services/storage-insights-notification.service';
 import { StorageInsightsService } from '../../api/storage-insights.service';
 import { CdForm } from '../../forms/cd-form';
-import { MgrModuleService } from '../../api/mgr-module.service';
 
 @Component({
   selector: 'cd-storage-insights-modal',
@@ -39,8 +38,7 @@ export class StorageInsightsModalComponent extends CdForm implements OnInit{
     private notificationService: NotificationService,
     private callHomeService: CallHomeService,
     private storageInsightsNotificationService: StorageInsightsNotificationService,
-    private storageInsightsService: StorageInsightsService,
-    private mgrModuleService: MgrModuleService
+    private storageInsightsService: StorageInsightsService
   ) {
     super();
   }
@@ -65,9 +63,7 @@ export class StorageInsightsModalComponent extends CdForm implements OnInit{
       companyName: new FormControl({value: null, disabled: this.callHomeEnabled}, [Validators.required]),
       firstName: new FormControl({value: null, disabled: this.callHomeEnabled}, [Validators.required]),
       lastName: new FormControl({value: null, disabled: this.callHomeEnabled}, [Validators.required]),
-      email: new FormControl({value: null, disabled: this.callHomeEnabled}, [Validators.required]),
-      transferID: new FormControl(),
-      password: new FormControl()
+      email: new FormControl({value: null, disabled: this.callHomeEnabled}, [Validators.required])
     });
   }
 
@@ -81,11 +77,6 @@ export class StorageInsightsModalComponent extends CdForm implements OnInit{
       this.modalForm.get('email').setValue(data.IBM_storage_insights.owner_email);
       const tenantId = data.IBM_storage_insights.owner_IBM_tenant_id
       this.fetchTenants(this.modalForm.value, tenantId);
-    });
-
-    this.mgrModuleService.getConfig('call_home_agent').subscribe((data: any) => {
-      this.modalForm.get('transferID').setValue(data.ecurep_userid);
-      this.modalForm.get('password').setValue(data.ecurep_password);
     });
     this.loadingReady();
   }
@@ -132,12 +123,5 @@ export class StorageInsightsModalComponent extends CdForm implements OnInit{
         this.activeModal.close();
       }
     });
-
-    this.mgrModuleService.updateConfig('call_home_agent', {
-      ecurep_userid: formFields['transferID'],
-      ecurep_password: formFields['password'],
-    }).subscribe({
-      error: () => this.modalForm.setErrors({ cdSubmitButton: true }),
-    })
   }
 }
