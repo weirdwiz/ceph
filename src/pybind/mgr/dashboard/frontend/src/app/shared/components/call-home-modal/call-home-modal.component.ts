@@ -61,7 +61,8 @@ export class CallHomeModalComponent extends CdForm implements OnInit {
       phone: new FormControl(null, [Validators.required]),
       address: new FormControl(null),
       companyName: new FormControl(null),
-      countryCode: new FormControl(null, [Validators.required])
+      countryCode: new FormControl(null, [Validators.required]),
+      licenseAgrmt: new FormControl(false, [Validators.requiredTrue])
     });
   }
 
