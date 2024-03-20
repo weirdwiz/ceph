@@ -5594,7 +5594,7 @@ void RGWCopyObj::pre_exec()
 }
 
 class RGWCOE_filter_from_proc: public RGWGetObj_Filter {
-  std::unique_ptr<rgw::sal::ObjectProcessor> processor;
+  rgw::sal::ObjectProcessor* processor;
   off_t ofs;
 public:
   RGWCOE_filter_from_proc() {}
@@ -5620,8 +5620,10 @@ public:
 class RGWCOE_proc_from_filters : public rgw::sal::ObjectProcessor
 {
   RGWGetObj_Filter &filter;
+  rgw::sal::ObjectProcessor &next;
 public:
-  RGWCOE_proc_from_filters(RGWGetObj_Filter &f) : filter(f) {
+  RGWCOE_proc_from_filters(RGWGetObj_Filter &f, rgw::sal::ObjectProcessor&n)
+        : filter(f), next(n) {
   }
   int process(bufferlist &&bl, uint64_t ofs) override {
     off_t len = bl.length();
@@ -5629,7 +5631,7 @@ public:
     return ret;
   };
   int prepare(optional_yield y) override {
-    throw -EDOM;	// do this elsewhere...
+    return next.prepare(y);
   };
   int complete(size_t account_size, const std::string& etag,
     ceph::real_time *mtime, ceph::real_time set_mtime,
@@ -5640,7 +5642,8 @@ public:
     rgw_zone_set *zones_trace, bool *canceled,
     optional_yield y)
   {
-    throw -EDOM;	// do this elsewhere...
+    return next.complete(account_size, etag, mtime, set_mtime, attrs, delete_at,
+                         if_match, if_nomatch, user_data, zones_trace, canceled, y);
   }
 };
 
@@ -5711,7 +5714,7 @@ public:
     ofs_x = 0;
     end_x = obj_size;
     encrypted = false;
-    *cb = RGWCOE_filter_from_proc(next);
+    cb = std::make_unique<RGWCOE_filter_from_proc>(next);
     RGWGetObj_Filter *filter = &*cb;
     // decompress
     op_ret = rgw_compression_info_from_attrset(attrs, need_decompress, cs_info);
@@ -5738,7 +5741,8 @@ public:
     if (op_ret < 0) {
       throw op_ret;
     }
-    oproc = std::make_unique<RGWCOE_proc_from_filters>(RGWCOE_proc_from_filters(*filter));
+    oproc = std::make_unique<RGWCOE_proc_from_filters>(RGWCOE_proc_from_filters(*filter,
+                                                       next));
     return *oproc;
 //    return new RGWCOE_proc_from_filters(&this);
   };
