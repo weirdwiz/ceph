@@ -76,6 +76,7 @@ export class StorageInsightsModalComponent extends CdForm implements OnInit{
       this.modalForm.get('lastName').setValue(data.IBM_storage_insights.owner_last_name);
       this.modalForm.get('email').setValue(data.IBM_storage_insights.owner_email);
       const tenantId = data.IBM_storage_insights.owner_IBM_tenant_id
+      this.modalForm.get('tenants').setValue(tenantId);
       this.fetchTenants(this.modalForm.value, tenantId);
     });
     this.loadingReady();

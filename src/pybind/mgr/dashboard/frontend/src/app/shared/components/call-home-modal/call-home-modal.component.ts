@@ -124,9 +124,6 @@ export class CallHomeModalComponent extends CdForm implements OnInit {
             } else {
               this.notificationService.show(NotificationType.success, $localize`Deactivated IBM Call Home Agent`);
               this.activeModal.close();
-              this.mgrModuleService.updateConfig('call_home_agent', {
-                owner_tenant_id: ''
-              }).subscribe();
             }
           },
           () => {
