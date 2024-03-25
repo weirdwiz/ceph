@@ -1025,6 +1025,7 @@ class RGWSpec(ServiceSpec):
                  rgw_realm_token: Optional[str] = None,
                  update_endpoints: Optional[bool] = False,
                  zone_endpoints: Optional[str] = None,  # comma separated endpoints list
+                 zonegroup_hostnames: Optional[str] = None,
                  rgw_user_counters_cache: Optional[bool] = False,
                  rgw_user_counters_cache_size: Optional[int] = None,
                  rgw_bucket_counters_cache: Optional[bool] = False,
@@ -1068,6 +1069,7 @@ class RGWSpec(ServiceSpec):
         self.rgw_realm_token = rgw_realm_token
         self.update_endpoints = update_endpoints
         self.zone_endpoints = zone_endpoints
+        self.zonegroup_hostnames = zonegroup_hostnames
 
         #: Enable rgw perf counters cache with specified size
         self.rgw_user_counters_cache = rgw_user_counters_cache
