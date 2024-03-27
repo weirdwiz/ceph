@@ -7233,21 +7233,15 @@ paths:
               properties:
                 cluster_alias:
                   type: string
-                cluster_fsid:
-                  type: string
                 hub_url:
                   type: string
                 password:
-                  type: string
-                prometheus_api_url:
                   type: string
                 ssl_certificate:
                   type: string
                 ssl_verify:
                   default: false
                   type: boolean
-                token:
-                  type: string
                 ttl:
                   type: string
                 url:
@@ -7428,8 +7422,6 @@ paths:
                 ssl_verify:
                   default: false
                   type: boolean
-                token:
-                  type: string
                 ttl:
                   type: string
                 url:
