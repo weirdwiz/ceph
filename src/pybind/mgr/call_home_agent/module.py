@@ -5,7 +5,7 @@ Authors:
     Juan Miguel Olmo Martinez <jolmomar@ibm.com>
 """
 
-from typing import List, Any, Tuple, Dict, Optional, Set, Callable
+from typing import List, Any, Tuple, Dict, Optional, Callable
 import time
 import json
 import requests
@@ -17,9 +17,9 @@ import glob
 import re
 
 from mgr_module import (Option, CLIReadCommand, CLIWriteCommand, MgrModule,
-                        HandleCommandResult, CommandResult)
+                        HandleCommandResult)
 # from .dataClasses import ReportHeader, ReportEvent
-from .dataDicts import ReportHeader, ReportEvent
+from .dataDicts import ReportHeader, ReportEvent, ceph_command
 
 # Dict to store operations requested from Call Home Mesh
 operations = {}
@@ -53,32 +53,6 @@ class SendError(Exception):
 # next report will contain the relevant alerts that are fetched from the
 # Prometheus API.
 sent_alerts = {}
-
-def ceph_command(mgr: Any, srv_type, prefix, srv_spec='', inbuf='', **kwargs):
-    # type: (Any, str, str, Optional[str], str, Any) -> Any
-    #
-    # Note: A simplified version of the function used in dashboard ceph services
-    """
-    :type prefix: str
-    :param srv_type: mon |
-    :param kwargs: will be added to argdict
-    :param srv_spec: typically empty. or something like "<fs_id>:0"
-    :param to_json: if true return as json format
-    """
-    argdict = {
-        "prefix": prefix,
-    }
-    argdict.update({k: v for k, v in kwargs.items() if v is not None})
-    result = CommandResult("")
-    mgr.send_command(result, srv_type, srv_spec, json.dumps(argdict), "", inbuf=inbuf)
-    r, outb, outs = result.wait()
-    if r != 0:
-        mgr.log.error(f"Execution of command '{prefix}' failed. (r={r}, outs=\"{outs}\", kwargs={kwargs})")
-    try:
-        return outb or outs
-    except Exception as ex:
-        mgr.log.error(f"Execution of command '{prefix}' failed: {ex}")
-        return outb
 
 def get_status(mgr: Any) -> dict:
     r, outb, outs = mgr.mon_command({
@@ -789,7 +763,7 @@ class CallHomeAgent(MgrModule):
         Option(
             name='valid_container_registry',
             type='str',
-            default=r'^.+\.icr\.io$',
+            default=r'^.+\.icr\.io',
             desc='Container registry pattern for urls where cephadm credentials(JWT token) are valid'
         ),
         Option(
