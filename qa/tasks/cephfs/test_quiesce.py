@@ -327,9 +327,6 @@ class QuiesceTestCase(CephFSTestCase):
         # check request/cap count is stopped
         # count inodes under /usr and count subops!
 
-    def reqid_tostr(self, reqid):
-        return f"{reqid['entity']['type']}.{reqid['entity']['num']}:{reqid['tid']}"
-
 class TestQuiesce(QuiesceTestCase):
     """
     Single rank functional tests.
@@ -346,7 +343,7 @@ class TestQuiesce(QuiesceTestCase):
         sleep(secrets.randbelow(30)+10)
 
         J = self.fs.rank_tell(["quiesce", "path", self.subvolume])
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid)
 
         self._verify_quiesce()
@@ -362,7 +359,7 @@ class TestQuiesce(QuiesceTestCase):
         sleep(secrets.randbelow(30)+10)
 
         J = self.fs.rank_tell(["quiesce", "path", self.subvolume])
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid)
 
         #path = os.path.normpath(os.path.join(self.mntpnt, ".."))
@@ -378,7 +375,7 @@ class TestQuiesce(QuiesceTestCase):
         """
 
         J = self.fs.rank_tell(["quiesce", "path", self.subvolume])
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid)
         self._verify_quiesce()
 
@@ -389,7 +386,7 @@ class TestQuiesce(QuiesceTestCase):
         """
 
         J = self.fs.rank_tell(["quiesce", "path", self.subvolume])
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid)
         self._verify_quiesce()
         ops = self.fs.get_ops()
@@ -420,7 +417,7 @@ class TestQuiesce(QuiesceTestCase):
         log.debug(f"{P}")
 
         J = self.fs.rank_tell(["quiesce", "path", self.subvolume])
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid)
 
         P = self.fs.rank_tell(["ops"])
@@ -490,7 +487,7 @@ class TestQuiesce(QuiesceTestCase):
         path = self.mount_a.cephfs_mntpt + "/dir"
 
         J = self.fs.rank_tell(["quiesce", "path", path, '--wait'])
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid, path=path)
         self._verify_quiesce(root=path)
 
@@ -517,7 +514,7 @@ class TestQuiesce(QuiesceTestCase):
         self._configure_subvolume()
 
         op1 = self.fs.rank_tell(["quiesce", "path", self.subvolume])['op']
-        op1_reqid = self.reqid_tostr(op1['reqid'])
+        op1_reqid = self._reqid_tostr(op1['reqid'])
         op2 = self.fs.rank_tell(["quiesce", "path", self.subvolume, '--wait'])['op']
         op1 = self.fs.get_op(op1_reqid)['type_data'] # for possible dup result
         log.debug(f"op1 = {op1}")
@@ -553,7 +550,7 @@ class TestQuiesce(QuiesceTestCase):
 
         J = self.fs.rank_tell(["quiesce", "path", self.subvolume])
         log.debug(f"{J}")
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid)
         self._verify_quiesce(root=self.subvolume)
 
@@ -575,7 +572,7 @@ class TestQuiesce(QuiesceTestCase):
 
         J = self.fs.rank_tell(["quiesce", "path", self.subvolume])
         log.debug(f"{J}")
-        reqid = self.reqid_tostr(J['op']['reqid'])
+        reqid = self._reqid_tostr(J['op']['reqid'])
         self._wait_for_quiesce_complete(reqid)
         self._verify_quiesce(root=self.subvolume)
 
@@ -662,7 +659,7 @@ class TestQuiesceMultiRank(QuiesceTestCase):
         for d in dirs:
             path = os.path.join(self.mntpnt, d)
             op = self.fs.rank_tell("quiesce", "path", path, rank=0)['op']
-            reqid = self.reqid_tostr(op['reqid'])
+            reqid = self._reqid_tostr(op['reqid'])
             log.info(f"created {reqid}")
             qops.append(reqid)
 
@@ -725,11 +722,11 @@ class TestQuiesceMultiRank(QuiesceTestCase):
             path = os.path.join(self.mntpnt, d)
             for r in self.ranks:
                 op = self.fs.rank_tell(["quiesce", "path", path], rank=r)['op']
-                reqid = self.reqid_tostr(op['reqid'])
+                reqid = self._reqid_tostr(op['reqid'])
                 log.info(f"created {reqid}")
                 ops.append((r, op, path))
         for rank, op, path in ops:
-            reqid = self.reqid_tostr(op['reqid'])
+            reqid = self._reqid_tostr(op['reqid'])
             log.debug(f"waiting for ({rank}, {reqid})")
             op = self._wait_for_quiesce_complete(reqid, rank=rank, path=path, status=status)
         for rank, op, path in ops:
@@ -782,8 +779,8 @@ class TestQuiesceSplitAuth(QuiesceTestCase):
 
         op0 = self.fs.rank_tell(["quiesce", "path", self.subvolume], rank=0)['op']
         op1 = self.fs.rank_tell(["quiesce", "path", self.subvolume], rank=1)['op']
-        reqid0 = self.reqid_tostr(op0['reqid'])
-        reqid1 = self.reqid_tostr(op1['reqid'])
+        reqid0 = self._reqid_tostr(op0['reqid'])
+        reqid1 = self._reqid_tostr(op1['reqid'])
         op0 = self._wait_for_quiesce_complete(reqid0, rank=0, timeout=300)
         op1 = self._wait_for_quiesce_complete(reqid1, rank=1, timeout=300)
         log.debug(f"op0 = {op0}")
