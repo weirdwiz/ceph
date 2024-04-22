@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Icons } from '~/app/shared/enum/icons.enum';
 
 @Component({
   selector: 'cd-login-layout',
@@ -11,4 +12,5 @@ export class LoginLayoutComponent {
     { section: 'terms', text: $localize`Terms of Use` },
     { section: 'privacy', text: $localize`Privacy Policy` }
   ];
+  icons = Icons;
 }
