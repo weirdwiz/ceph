@@ -7,7 +7,7 @@ from ipaddress import ip_address, IPv6Address
 from mgr_module import HandleCommandResult
 from ceph.deployment.service_spec import NvmeofServiceSpec
 
-from orchestrator import DaemonDescription, DaemonDescriptionStatus
+from orchestrator import OrchestratorError, DaemonDescription, DaemonDescriptionStatus
 from .cephadmservice import CephadmDaemonDeploySpec, CephService
 from .. import utils
 
@@ -68,8 +68,8 @@ class NvmeofService(CephService):
         # if send command failed, raise assertion exception, failing the daemon creation
         assert not err, f"Unable to send monitor command {cmd}, error {err}"
         if not hasattr(self, 'gws'):
-            self.gws = {} # id -> name map of gateways for this service.
-        self.gws[nvmeof_gw_id] = name # add to map of service's gateway names
+            self.gws = {}  # id -> name map of gateways for this service.
+        self.gws[nvmeof_gw_id] = name  # add to map of service's gateway names
         return daemon_spec
 
     def config_dashboard(self, daemon_descrs: List[DaemonDescription]) -> None:
@@ -140,10 +140,19 @@ class NvmeofService(CephService):
         if not ret:
             logger.info(f'{daemon.hostname} removed from nvmeof gateways dashboard config')
 
-        # Assert configured
-        assert self.pool
-        assert self.group is not None
-        assert daemon.daemon_id in self.gws
+        if not hasattr(self, 'pool'):
+            err_msg = ('Trying to remove nvmeof but no pool is defined')
+            logger.error(err_msg)
+            raise OrchestratorError(err_msg)
+        if not hasattr(self, 'group') or self.group is None:
+            err_msg = ('Trying to remove nvmeof but no group is defined')
+            logger.error(err_msg)
+            raise OrchestratorError(err_msg)
+        if daemon.daemon_id not in self.gws:
+            err_msg = (f'Trying to remove nvmeof but {daemon.daemon_id} '
+                       'not in gws list')
+            logger.error(err_msg)
+            raise OrchestratorError(err_msg)
         name = self.gws[daemon.daemon_id]
         self.gws.pop(daemon.daemon_id)
         # Notify monitor about this gateway deletion
