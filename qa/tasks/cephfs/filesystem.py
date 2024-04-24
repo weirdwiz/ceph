@@ -1265,6 +1265,9 @@ class Filesystem(MDSCluster):
 
         try:
             out = self.mon_manager.raw_cluster_cmd("tell", f"mds.{mds_id}", *args, **kwargs)
+            out = out.strip()
+            if len(out) == 0:
+                return {}
             return json.loads(out)
         except json.decoder.JSONDecodeError:
             log.error("could not decode: {}".format(out))
