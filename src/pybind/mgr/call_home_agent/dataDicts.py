@@ -16,13 +16,12 @@ DISABLE_SI_MESSAGES = 'disable_si_messages'
 CONFIRM_RESPONSE = 'confirm_response'
 NOT_SUPPORTED = 'unknown_operation'
 
-
 # Constants for operation status
-OPERATION_STATUS_NEW = 'new'
-OPERATION_STATUS_IN_PROGRESS = 'in progress'
-OPERATION_STATUS_COMPLETE = 'complete'
-OPERATION_STATUS_ERROR = 'error'
-OPERATION_STATUS_REQUEST_REJECTED = 'rejected'
+OPERATION_STATUS_NEW = 'READY'
+OPERATION_STATUS_IN_PROGRESS = 'IN_PROGRESS'
+OPERATION_STATUS_COMPLETE = 'COMPLETE'
+OPERATION_STATUS_ERROR = 'ERROR'
+OPERATION_STATUS_REQUEST_REJECTED = 'REQUEST_REJECTED'
 
 #Constants for operations status delivery
 ST_NOT_SENT = 0
@@ -45,7 +44,7 @@ def confirm_response_event(ceph_cluster_id: str, report_timestamp: float,
                 "tenant_id": tenant_id,
         },
         "body": {
-                "event_transaction_id": "UnSolicited_RedHatMarine_ceph_Request",
+                "event_transaction_id": "Unsolicited_Storage_Insights_RedHatMarine_ceph_Request",
                 "event_type": "last_contact",
                 "component": "ceph_operations"
         }
@@ -68,7 +67,7 @@ def upload_snap_operation_event(ceph_cluster_id: str, report_timestamp: float,
                 "tenant_id": tenant_id,
             },
             "body": {
-                "event_transaction_id": "UnSolicited_RedHatMarine_ceph_Request",
+                "event_transaction_id": "Unsolicited_Storage_Insights_RedHatMarine_ceph_Request",
                 "product":  "Red Hat Ceph",
                 "component": "ceph_log_upload",
                 "description":  operation['description'],
@@ -251,7 +250,7 @@ class ReportEvent():
             # Additional fields to enable response with commands
             event_data["body"]["context"]["messagetype"] = 1
             event_data["body"]["enable_response_detail"] = True
-            event_data["body"]["enable_response_detail_filter"] = ["UnSolicited_RedHatMarine_ceph_Request"]
+            event_data["body"]["enable_response_detail_filter"] = ["Unsolicited_Storage_Insights_RedHatMarine_ceph_Request"]
 
         return event_data
 

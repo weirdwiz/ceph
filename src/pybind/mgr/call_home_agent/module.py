@@ -515,7 +515,7 @@ class Report:
         try:
             if report_type == 'last_contact':
                 # retrieve operations from response
-                inbound_requests = resp.json().get('response_state', {}).get('transactions',{}).get('UnSolicited_RedHatMarine_ceph_Request', {}).get('response_object', {}).get('product_request', {}).get('asset_event_detail', {}).get('body', {}).get('inbound_requests', {})
+                inbound_requests = resp.json().get('response_state', {}).get('transactions',{}).get('Unsolicited_Storage_Insights_RedHatMarine_ceph_Request', {}).get('response_object', {}).get('product_request', {}).get('asset_event_detail', {}).get('body', {}).get('inbound_requests', {})
 
                 if inbound_requests:
                     event_id = resp.json().get('transaction', {}).get('event_id', '')
