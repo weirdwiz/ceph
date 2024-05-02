@@ -179,9 +179,9 @@ class GaneshaConfParser:
 
 
 class FSAL(object):
-    def __init__(self, name: str, cmount_path: Optional[str] = "/") -> None:
+    def __init__(self, name: str) -> None:
         self.name = name
-        self.cmount_path = cmount_path
+        self.cmount_path = '/'
 
     @classmethod
     def from_dict(cls, fsal_dict: Dict[str, Any]) -> 'FSAL':
@@ -212,11 +212,10 @@ class CephFSFSAL(FSAL):
                  user_id: Optional[str] = None,
                  fs_name: Optional[str] = None,
                  sec_label_xattr: Optional[str] = None,
-                 cephx_key: Optional[str] = None,
-                 cmount_path: Optional[str] = "/") -> None:
+                 cephx_key: Optional[str] = None) -> None:
         super().__init__(name)
         assert name == 'CEPH'
-        self.cmount_path = cmount_path
+        self.cmount_path = '/'
         self.fs_name = fs_name
         self.user_id = user_id
         self.sec_label_xattr = sec_label_xattr
@@ -228,8 +227,7 @@ class CephFSFSAL(FSAL):
                    fsal_block.values.get('user_id'),
                    fsal_block.values.get('filesystem'),
                    fsal_block.values.get('sec_label_xattr'),
-                   fsal_block.values.get('secret_access_key'),
-                   cmount_path=fsal_block.values.get('cmount_path'))
+                   fsal_block.values.get('secret_access_key'))
 
     def to_fsal_block(self) -> RawBlock:
         result = RawBlock('FSAL', values={'name': self.name})
@@ -242,8 +240,7 @@ class CephFSFSAL(FSAL):
             result.values['sec_label_xattr'] = self.sec_label_xattr
         if self.cephx_key:
             result.values['secret_access_key'] = self.cephx_key
-        if self.cmount_path:
-            result.values['cmount_path'] = self.cmount_path
+        result.values['cmount_path'] = '/'
         return result
 
     @classmethod
@@ -252,8 +249,7 @@ class CephFSFSAL(FSAL):
                    fsal_dict.get('user_id'),
                    fsal_dict.get('fs_name'),
                    fsal_dict.get('sec_label_xattr'),
-                   fsal_dict.get('cephx_key'),
-                   fsal_dict.get('cmount_path'))
+                   fsal_dict.get('cephx_key'))
 
     def to_dict(self) -> Dict[str, str]:
         r = {'name': self.name}

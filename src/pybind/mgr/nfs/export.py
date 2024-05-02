@@ -664,8 +664,7 @@ class ExportMgr:
                              squash: str,
                              access_type: str,
                              clients: list = [],
-                             sectype: Optional[List[str]] = None,
-                             cmount_path: Optional[str] = "/") -> Dict[str, Any]:
+                             sectype: Optional[List[str]] = None) -> Dict[str, Any]:
 
         try:
             cephfs_path_is_dir(self.mgr, fs_name, path)
@@ -689,7 +688,7 @@ class ExportMgr:
                     "squash": squash,
                     "fsal": {
                         "name": NFS_GANESHA_SUPPORTED_FSALS[0],
-                        "cmount_path": cmount_path,
+                        "cmount_path": "/",
                         "fs_name": fs_name,
                     },
                     "clients": clients,
@@ -792,11 +791,7 @@ class ExportMgr:
         )
 
         # Ensure cmount_path is present in FSAL block
-        if not new_export.fsal.cmount_path:
-            if old_export:
-                new_export.fsal.cmount_path = old_export.fsal.cmount_path
-            else:
-                new_export.fsal.cmount_path = '/'
+        new_export.fsal.cmount_path = '/'
 
         if not old_export:
             if new_export.fsal.name == NFS_GANESHA_SUPPORTED_FSALS[0]:
