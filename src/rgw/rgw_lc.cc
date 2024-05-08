@@ -1392,11 +1392,6 @@ public:
     auto& bucket = oc.bucket;
     auto& obj = oc.obj;
 
-    RGWObjState* obj_state{nullptr};
-    ret = obj->get_obj_state(oc.dpp, &obj_state, null_yield, true);
-    if (ret < 0) {
-      return ret;
-    }
 
     const auto event_type = (bucket->versioned() &&
 			     oc.o.is_current() && !oc.o.is_delete_marker()) ?
@@ -1427,6 +1422,12 @@ public:
     if (ret < 0) {
       return ret;
     } else {
+      RGWObjState* obj_state{nullptr};
+      ret = obj->get_obj_state(oc.dpp, &obj_state, null_yield, true);
+      if (ret < 0) {
+        return ret;
+      }
+
       // send request to notification manager
       ret =  notify->publish_commit(oc.dpp, obj_state->size,
 				    ceph::real_clock::now(),
